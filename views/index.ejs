@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Group Chat</title>
+    <script src=" http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="stylesheet/style.css">
+
+    <script>
+        $(document).ready(function () {
+            var socket = io();
+            var new_user = prompt("What is your name?");
+
+            socket.on("user_data", function(data){
+                users_array = data.users; 
+                console.log(users_array)
+                // when the page connects I want it to loop through 
+                // the users array to display the users joined with different background
+               //
+                
+            });
+
+            socket.emit("new_user_added", {
+                user: new_user
+                // creating a new user from the prompt message
+            });
+
+            socket.on("new_user", function(data){
+                // app listens for new user 
+                var users = data.users;
+                var user = data.user;
+                // What i'm trying to do here is add the new user to the page 
+                // without having to loop through the entire array again.
+                // because before, every time a new user was added, it would 
+                // print out the whole users array again.
+
+                for (var i = users.length-1; i < users.length; i++) {
+                    if (i < users.length-2){
+                        continue;
+                    } else if (i % 2 == 0) {
+                        $("#message").append("<p style='background-color:rgb(218, 218, 218)' class='user1' id='"+ users[i]["id"] +"'>" + users[i]['name'] + " has joined..</p>");
+                        // $('.user1').css("background-color", "whitesmoke");
+                    } else {
+                        $("#message").append("<p class='user1' id='"+ users[i]["id"] +"'>" + users[i]['name'] + " has joined..</p>");
+
+                    }
+                }
+            });
+            socket.on("users_data_two", function(data){
+                // var users = data.users
+                // $('#sub').on("click", function () {
+                //     var user = data.user;
+                //     console.log(user)
+                //     var message = $('#text').val();
+                //     // user.msgs.push(message);
+                //     console.log(message)
+                // });
+/////// this is for posting messages 
+            })
+            $("#leave").on("click", function() {
+                console.log("disconnecting");
+                // disconnects user simply by redirecting
+                // socket.emit("disconnect");
+                
+            });
+            socket.on("disconnect_user", function(data){
+                var user = data.user;
+                // removes user from group chat
+                $("#" + user.user_id).remove();
+
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <div id="message">
+        
+    </div>
+    
+    <div id="input">
+        <textarea name="message" id="text" cols="50" rows="5"></textarea>
+        <button id="sub">Submit</button>
+    </div>
+    <br>
+  <a href="/leave"><button id="leave">Leave Group Chat</button></a>
+</body>
+
+</html>
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Group Chat</title>
+    <script src=" http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link rel="stylesheet" href="stylesheet/style.css">
+    <script>
+        $(document).ready(function () {
+            var socket = io();
+            // console.log(session);
+            var new_user = prompt("What is your name?");
+
+            socket.emit("new_user_added", {
+                new_user: new_user
+            });
+
+            socket.on("new_user", function (data) {
+                var users = data.users;
+                var user = data.user;
+                // session.user_id = user.id;
+                console.log(user);
+
+                for (i in users) {
+                    if (i % 2 == 0) {
+                        $("#message").append("<p style='background-color:rgb(218, 218, 218)' class='user1'>" + users[i].name + " has joined..</p>");
+                        // $('.user1').css("background-color", "whitesmoke");
+                    } else {
+                        $("#message").append("<p class='user1'>" + users[users.length - 1].name + " has joined..</p>");
+
+                    }
+                }
+
+
+            });
+
+            $('#sub').on("click", function () {
+                var message = $('#text').val();
+                user.msgs.push(message);
+                $("#text").val(''); //sets empty value of text area after submission
+                console.log(user.name);
+                console.log(user.msgs);
+            });
+
+            $("#leave").on("click", function () {
+                socket.emit("disconnect_user", {
+                    user: user
+                });
+
+            });
+        });
+    </script>
+</head>
+
+<body>
+
+    <div id="message">
+
+    </div>
+
+    <div id="input">
+        <textarea name="message" id="text" cols="50" rows="5"></textarea>
+        <button id="sub">Submit</button>
+    </div>
+
+
+</body>
+
+</html> -->

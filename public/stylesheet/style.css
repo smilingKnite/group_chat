@@ -1,0 +1,61 @@
+.user1 {
+    display: block;
+    padding: 2px;
+    margin-top: none;
+}
+#message {
+    height: 350px;
+    width: 500px;
+    border: 2px solid black;
+    background-color: whitesmoke;
+    margin: 5px;
+    overflow: scroll;
+    margin: auto;
+}
+/* width */
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+/* Track */
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Handle */
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+/* Handle on hover */
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+#input {
+    border: 2px solid black;
+    width: 500px;
+    
+    margin: 5px auto;
+}
+#sub {
+    vertical-align: top;
+    margin: 5px;
+    padding: 15px;
+    font-size: 20px;
+    border: 1px solid gray;
+    background: linear-gradient(to bottom right, white, rgb(66, 66, 66));
+}
+#sub:hover {
+    background: linear-gradient(to bottom left, white, rgb(66, 66, 66));
+}
+#leave {
+    text-align: center;
+    padding: 5px;
+    border: 2px solid black;
+    margin: auto;
+    display: block;
+}
