@@ -15,69 +15,102 @@
             var socket = io();
             var new_user = prompt("What is your name?");
 
-            socket.on("user_data", function(data){
-                users_array = data.users; 
-                console.log(users_array)
-                // when the page connects I want it to loop through 
-                // the users array to display the users joined with different background
-               //
-                
-            });
-
             socket.emit("new_user_added", {
                 user: new_user
                 // creating a new user from the prompt message
             });
 
+            socket.on("user_data", function(data){
+                users = data.users; 
+                // console.log(users);
+                // when the page connects I want it to loop through 
+                // the users array to display the users joined with different background
+
+                if (users.length == null){
+                    $("#online_status").html("No users online");
+
+                } else if (users.length == 0) {
+
+                    $("#online_users").html(`<p id="online_status"></p> <p id="users"></p>`);
+                    $("#online_status").html(`${users.length + 1} user is online`);
+                    // $("#online_status").html("No users online");//
+                    for (var i = 0; i < users.length; i++) {
+                        $("#online_users").append(`<p class="user1" id="${users[i].id}"> ${users[i].name} is online</p>`);
+                    }
+                } else {
+                    $("#online_users").html(`<p id="online_status"></p> <p id="users"></p>`);
+                    $("#online_status").html(`${users.length + 1} users are online`);
+                    for (var i = 0; i < users.length; i++) {
+                        $("#online_users").append(`<p class="user1" id="${users[i].id}"> ${users[i].name} is online</p>`);
+                    }
+                    
+                }
+                
+            });
+            
+            
             socket.on("new_user", function(data){
                 // app listens for new user 
-                var users = data.users;
                 var user = data.user;
+                var users = data.users;
                 // What i'm trying to do here is add the new user to the page 
                 // without having to loop through the entire array again.
                 // because before, every time a new user was added, it would 
                 // print out the whole users array again.
+                $("#online_users").append(`<p class="user1" id="${user.id}"> ${user.name} is online</p>`);
+               
+                $("#leaving").on("click", function () {
+                    for(var i=0; i < users.length; i++){
+                        if (users[i].id == user.id){
+                            console.log("found");
 
-                for (var i = users.length-1; i < users.length; i++) {
-                    if (i < users.length-2){
-                        continue;
-                    } else if (i % 2 == 0) {
-                        $("#message").append("<p style='background-color:rgb(218, 218, 218)' class='user1' id='"+ users[i]["id"] +"'>" + users[i]['name'] + " has joined..</p>");
-                        // $('.user1').css("background-color", "whitesmoke");
-                    } else {
-                        $("#message").append("<p class='user1' id='"+ users[i]["id"] +"'>" + users[i]['name'] + " has joined..</p>");
+                            $(`#${user.id}`).remove();
 
+                            socket.emit("disconnect", {
+                                user: user
+                            })
+                        }
                     }
-                }
-            });
-            socket.on("users_data_two", function(data){
-                // var users = data.users
-                // $('#sub').on("click", function () {
-                //     var user = data.user;
-                //     console.log(user)
-                //     var message = $('#text').val();
-                //     // user.msgs.push(message);
-                //     console.log(message)
-                // });
-/////// this is for posting messages 
-            })
-            $("#leave").on("click", function() {
-                console.log("disconnecting");
-                // disconnects user simply by redirecting
-                // socket.emit("disconnect");
+                    // disconnects user simply by redirecting
+
+
+                });
                 
             });
-            socket.on("disconnect_user", function(data){
-                var user = data.user;
-                // removes user from group chat
-                $("#" + user.user_id).remove();
-
+            
+            $('#sub').on("click", function () {
+                var message;
+                message = $('#text').val();
+                socket.emit("new_message", {
+                    msg: message 
+                });
+                // console.log(user)//////////
+                // user.msgs.push(message);//
+                // console.log(message)
             });
+            socket.on("new_mes", function(data){
+                var message = data.msgs;
+                $("#message").append(`<p>${message.user.name}: ${message.msg[0]}</p>`)
+            });
+            //     ////////// this is for posting messages 
+           
+
+            
+            // socket.on("disconnect_user", function(data){
+            //     var users = data.users;
+            //     // removes user from group chat
+            //     $("#" + user.id).remove();
+
+            // });
         });
     </script>
 </head>
 
 <body>
+    <div id="online_users">
+        <p id="online_status"></p>
+        <p id="users"></p>
+    </div>
 
     <div id="message">
         
@@ -87,11 +120,13 @@
         <textarea name="message" id="text" cols="50" rows="5"></textarea>
         <button id="sub">Submit</button>
     </div>
+    
     <br>
-  <a href="/leave"><button id="leave">Leave Group Chat</button></a>
+    <button id="leaving"><a href="/">Leave Group Chat</a></button>
 </body>
 
 </html>
+
 <!-- 
 <!DOCTYPE html>
 <html lang="en">
